@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Meta tags, título e estilos -->
+    <title>Gestão de Estoque - Produtos</title>
+</head>
+<body>
+
+<div class="container">
+    <h2>Lista de Produtos</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Preço</th>
+            <th>Quantidade</th>
+            <th>Fornecedor</th>
+            <th>Ações</th>
+        </tr>
+        <tr th:each="produto : ${produtos}">
+            <td th:text="${produto.id}"></td>
+            <td th:text="${produto.nome}"></td>
+            <td th:text="${produto.descricao}"></td>
+            <td th:text="${produto.preco}"></td>
+            <td th:text="${produto.quantidade}"></td>
+            <td th:text="${produto.fornecedor.nome}"></td>
+            <td>
+                <a th:href="@{/produtos/{id}(id=${produto.id})}">Detalhes</a>
+                <a th:href="@{/produtos/edit/{id}(id=${produto.id})}">Editar</a>
+                <a th:href="@{/produtos/delete/{id}(id=${produto.id})}" onclick="return confirm('Tem certeza? ')">Excluir</a>
+            </td>
+        </tr>
+    </table>
+    <a th:href="@{/produtos/create}">Novo Produto</a>
+</div>
+
+<!-- Script -->
+</body>
+</html>
