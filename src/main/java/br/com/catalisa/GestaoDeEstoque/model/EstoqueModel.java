@@ -43,6 +43,4 @@ public class EstoqueModel {
 
     @Column(name = "quantidade_ultima_retirada")
     private int quantidadeDaUltimaRetirada;
-
-
 }

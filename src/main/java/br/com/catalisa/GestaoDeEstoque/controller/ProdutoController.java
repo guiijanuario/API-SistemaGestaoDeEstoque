@@ -4,20 +4,28 @@ import br.com.catalisa.GestaoDeEstoque.exception.BadRequestException;
 import br.com.catalisa.GestaoDeEstoque.exception.ResourceNotFoundException;
 import br.com.catalisa.GestaoDeEstoque.model.ProdutoModel;
 import br.com.catalisa.GestaoDeEstoque.service.ProdutoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/produtos")
+@Tag(name = "Feature - Produtos")
 public class ProdutoController {
 
     @Autowired
     private ProdutoService produtoService;
+    @GetMapping
+    @ResponseBody
+    @Operation(summary = " : Lista todos os Produtos", method = "GET")
+    public List<ProdutoModel> listarProdutos() {
+        return produtoService.getAllProdutos();
+    }
 
     @GetMapping("/{id}")
     public ProdutoModel getProdutoById(@PathVariable Long id) {
@@ -34,10 +42,4 @@ public class ProdutoController {
         return new ResponseEntity<>(novoProduto, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public String listarProdutos(Model model) {
-        List<ProdutoModel> produtos = produtoService.getAllProdutos();
-        model.addAttribute("produtos", produtos);
-        return "produtos";
-    }
 }

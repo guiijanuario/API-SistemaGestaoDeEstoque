@@ -1,8 +1,12 @@
 package br.com.catalisa.GestaoDeEstoque.service;
 
 import br.com.catalisa.GestaoDeEstoque.exception.ResourceNotFoundException;
+import br.com.catalisa.GestaoDeEstoque.model.CepModel;
 import br.com.catalisa.GestaoDeEstoque.model.FornecedorModel;
+import br.com.catalisa.GestaoDeEstoque.repository.CepRepository;
 import br.com.catalisa.GestaoDeEstoque.repository.FornecedorRepository;
+import br.com.catalisa.GestaoDeEstoque.validations.CepValidations;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,16 @@ public class FornecedorService {
     @Autowired
     private FornecedorRepository fornecedorRepository;
 
+    @Autowired
+    private CepRepository cepRepository;
+
+    @Autowired
+    private CepService cepService;
+
+    @Autowired
+    private CepValidations cepValidations;
+
+
     public List<FornecedorModel> getAllFornecedores() {
         return fornecedorRepository.findAll();
     }
@@ -23,6 +37,10 @@ public class FornecedorService {
     }
 
     public FornecedorModel createFornecedor(FornecedorModel fornecedor) {
+        if (fornecedor.getCep() != null) {
+            CepModel cepModel = cepService.findCep(fornecedor.getCep());
+            fornecedor.setCepModel(cepModel);
+        }
         return fornecedorRepository.save(fornecedor);
     }
 
@@ -32,12 +50,7 @@ public class FornecedorService {
 
         fornecedorExistente.setNome(fornecedorAtualizado.getNome());
         fornecedorExistente.setTelefone(fornecedorAtualizado.getTelefone());
-        fornecedorExistente.setLogradouro(fornecedorAtualizado.getLogradouro());
-        fornecedorExistente.setBairro(fornecedorAtualizado.getBairro());
-        fornecedorExistente.setNroEnd(fornecedorAtualizado.getNroEnd());
-        fornecedorExistente.setCep(fornecedorAtualizado.getCep());
-        fornecedorExistente.setCidade(fornecedorAtualizado.getCidade());
-        fornecedorExistente.setEstado(fornecedorAtualizado.getEstado());
+        fornecedorExistente.setCepModel(fornecedorAtualizado.getCepModel());
 
         return fornecedorRepository.save(fornecedorExistente);
     }

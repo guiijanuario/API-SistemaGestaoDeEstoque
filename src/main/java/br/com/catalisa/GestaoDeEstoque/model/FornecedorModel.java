@@ -1,5 +1,7 @@
 package br.com.catalisa.GestaoDeEstoque.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,12 +18,18 @@ public class FornecedorModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Schema(description = "Nome do Fornecedor", example = "asdoasjiodjasdjioasiod")
     private String nome;
     private String telefone;
-    private String logradouro;
-    private String bairro;
-    private String nroEnd;
     private String cep;
-    private String cidade;
-    private String estado;
+    private String nro;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "Endereço: {cep}, {logradouro}, {bairro}, {localidade} - {uf}")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cep_id")
+    private CepModel cepModel;
+
+
+
 }

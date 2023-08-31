@@ -26,6 +26,7 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
     private record ErrorDetails(String message, int statusCode) {
     }
 }
