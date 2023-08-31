@@ -1,6 +1,8 @@
 package br.com.catalisa.GestaoDeEstoque.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +26,7 @@ public class EstoqueModel {
     @JoinColumn(name = "produto_id")
     private ProdutoModel produto;
 
+    @NotEmpty
     private int quantidade;
 
     @Column(name = "valor_custo")
@@ -40,6 +43,7 @@ public class EstoqueModel {
 
     @Column(name = "data_hora_retirada")
     private LocalDateTime dataHoraRetirada;
+
 
     @Column(name = "quantidade_ultima_retirada")
     private int quantidadeDaUltimaRetirada;

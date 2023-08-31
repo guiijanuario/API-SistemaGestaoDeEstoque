@@ -14,6 +14,12 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ViaCepNullException.class)
+    public ResponseEntity<Object> handleResourceNotFoundException(ViaCepNullException ex) {
+        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE.value());
+        return new ResponseEntity<>(errorDetails, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+    }
+
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
         ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), HttpStatus.BAD_REQUEST.value());

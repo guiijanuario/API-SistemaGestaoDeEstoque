@@ -40,7 +40,7 @@ public class FornecedorService {
         if (fornecedor.getCep() != null) {
             CepModel cepModel = cepService.findCep(fornecedor.getCep());
             fornecedor.setCepModel(cepModel);
-        }
+        } else throw new ResourceNotFoundException("O CEP deve estar no formato '87045650' ou '87045-650'");
         return fornecedorRepository.save(fornecedor);
     }
 

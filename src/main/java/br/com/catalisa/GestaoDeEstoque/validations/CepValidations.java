@@ -13,6 +13,9 @@ public class CepValidations {
         if (cep.length() < 8) {
             throw new ViaCepNullException("CEP faltando números");
         }
+        if (cep.length() > 9) {
+            throw new ViaCepNullException("CEP está com números de mais");
+        }
     }
     public String removedorDeMascaraCep(String cep){
         try {

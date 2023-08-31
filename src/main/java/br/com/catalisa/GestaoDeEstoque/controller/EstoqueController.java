@@ -1,16 +1,21 @@
 package br.com.catalisa.GestaoDeEstoque.controller;
 
+import br.com.catalisa.GestaoDeEstoque.dto.EstoqueListDto;
 import br.com.catalisa.GestaoDeEstoque.dto.EstoqueRequestDto;
+import br.com.catalisa.GestaoDeEstoque.dto.ProdutoResponseEstoqueDto;
 import br.com.catalisa.GestaoDeEstoque.exception.ResourceNotFoundException;
 import br.com.catalisa.GestaoDeEstoque.model.EstoqueModel;
 import br.com.catalisa.GestaoDeEstoque.model.ProdutoModel;
 import br.com.catalisa.GestaoDeEstoque.service.EstoqueService;
 import br.com.catalisa.GestaoDeEstoque.service.ProdutoService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,9 +27,29 @@ public class EstoqueController {
     @Autowired
     private ProdutoService produtoService;
 
+
     @GetMapping("/listarEstoque")
-    public List<EstoqueModel> listarTodoEstoque() {
-        return estoqueService.listarTodoEstoque();
+    @Operation(summary = " : Listar todo o estoque", method = "GET")
+    public ResponseEntity<List<EstoqueListDto>> listarTodosAlunos() {
+        List<EstoqueModel> estoqueEncontrados = estoqueService.listarTodoEstoque();
+
+        List<EstoqueListDto> estoqueListDtos = new ArrayList<>();
+        for (EstoqueModel estoqueProduto : estoqueEncontrados) {
+            ProdutoResponseEstoqueDto produtoDto = new ProdutoResponseEstoqueDto(
+                    estoqueProduto.getProduto().getCodigoBarras(),
+                    estoqueProduto.getProduto().getMarca(),
+                    estoqueProduto.getProduto().getNome(),
+                    estoqueProduto.getProduto().getCategoria());
+
+            EstoqueListDto estoqueDto = new EstoqueListDto(
+                    produtoDto,
+                    estoqueProduto.getQuantidade(),
+                    estoqueProduto.getValorVenda());
+            estoqueListDtos.add(estoqueDto);
+        }
+
+       // logEventosService.gerarLogListarAll(TipoLogEvento.LISTOU_ALUNOS);
+        return ResponseEntity.ok(estoqueListDtos);
     }
 
     @PostMapping("/entrada")
