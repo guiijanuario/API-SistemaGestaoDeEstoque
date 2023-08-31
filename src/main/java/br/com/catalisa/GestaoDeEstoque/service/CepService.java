@@ -5,6 +5,7 @@ import br.com.catalisa.GestaoDeEstoque.repository.CepRepository;
 import br.com.catalisa.GestaoDeEstoque.validations.CepValidations;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class CepService {
     @Autowired
     private CepValidations cepValidations;
 
+    @Cacheable("cep")
     public CepModel findCep(String cepString) {
        cepValidations.validaCep(cepString);
        cepValidations.removedorDeMascaraCep(cepString);

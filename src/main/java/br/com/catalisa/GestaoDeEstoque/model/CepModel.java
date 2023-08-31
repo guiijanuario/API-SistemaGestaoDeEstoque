@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Schema(name = "Endereço")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class CepModel {
+public class CepModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

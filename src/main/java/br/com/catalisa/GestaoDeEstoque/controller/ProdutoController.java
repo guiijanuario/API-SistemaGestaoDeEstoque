@@ -10,6 +10,7 @@ import br.com.catalisa.GestaoDeEstoque.service.ProdutoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public class ProdutoController {
     @GetMapping
     @ResponseBody
     @Operation(summary = " : Lista todos os Produtos", method = "GET")
+    @Cacheable("produtos")
     public List<ProdutoModel> listarProdutos() {
         logEventosService.gerarLogListarAll(TipoLogEvento.LISTOU_PRODUTOS);
         return produtoService.getAllProdutos();

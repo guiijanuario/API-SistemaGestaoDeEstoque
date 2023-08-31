@@ -9,13 +9,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @Table(name = "TB_FORNECEDORES")
-public class FornecedorModel {
+public class FornecedorModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -12,6 +12,7 @@ import br.com.catalisa.GestaoDeEstoque.service.EstoqueService;
 import br.com.catalisa.GestaoDeEstoque.service.ProdutoService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +36,8 @@ public class EstoqueController {
 
     @GetMapping("/listarEstoque")
     @Operation(summary = " : Listar todo o estoque", method = "GET")
-    public ResponseEntity<List<EstoqueListDto>> listarTodosAlunos() {
+    @Cacheable("estoques")
+    public ResponseEntity<List<EstoqueListDto>> listarTodosEstoques() {
         List<EstoqueModel> estoqueEncontrados = estoqueService.listarTodoEstoque();
         List<EstoqueListDto> estoqueListDtos = new ArrayList<>();
         for (EstoqueModel estoqueProduto : estoqueEncontrados) {

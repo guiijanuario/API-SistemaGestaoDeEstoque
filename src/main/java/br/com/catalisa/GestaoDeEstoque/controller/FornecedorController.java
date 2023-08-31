@@ -9,6 +9,7 @@ import br.com.catalisa.GestaoDeEstoque.model.FornecedorModel;
 import br.com.catalisa.GestaoDeEstoque.service.FornecedorService;
 import br.com.catalisa.GestaoDeEstoque.validations.CepValidations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,7 @@ public class FornecedorController {
     private LogEventosService logEventosService;
 
     @GetMapping
+    @Cacheable("fornecedores")
     public ResponseEntity<List<FornecedorResponseDto>> getAllFornecedores() {
         List<FornecedorModel> fornecedoresEncontrados = fornecedorService.getAllFornecedores();
 
