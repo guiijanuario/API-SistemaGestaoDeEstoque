@@ -2,7 +2,9 @@ package br.com.catalisa.GestaoDeEstoque.controller;
 
 import br.com.catalisa.GestaoDeEstoque.dto.CepResponseDto;
 import br.com.catalisa.GestaoDeEstoque.dto.FornecedorResponseDto;
+import br.com.catalisa.GestaoDeEstoque.enums.TipoLogEvento;
 import br.com.catalisa.GestaoDeEstoque.exception.ResourceNotFoundException;
+import br.com.catalisa.GestaoDeEstoque.log.LogEventosService;
 import br.com.catalisa.GestaoDeEstoque.model.FornecedorModel;
 import br.com.catalisa.GestaoDeEstoque.service.FornecedorService;
 import br.com.catalisa.GestaoDeEstoque.validations.CepValidations;
@@ -26,6 +28,9 @@ public class FornecedorController {
     @Autowired
     private CepValidations cepValidations;
 
+    @Autowired
+    private LogEventosService logEventosService;
+
     @GetMapping
     public ResponseEntity<List<FornecedorResponseDto>> getAllFornecedores() {
         List<FornecedorModel> fornecedoresEncontrados = fornecedorService.getAllFornecedores();
@@ -47,6 +52,7 @@ public class FornecedorController {
                     cepResponseDto);
             fornecedoresResponseDto.add(fornecedorResponseDto);
         }
+        logEventosService.gerarLogListarAll(TipoLogEvento.LISTOU_FORNECEDORES);
         return ResponseEntity.ok(fornecedoresResponseDto);
     }
 
@@ -68,42 +74,29 @@ public class FornecedorController {
                 fornecedor.getCep(),
                 fornecedor.getNro(),
                 cepResponseDto);
-
+        logEventosService.gerarLogBuscaDePeloId(fornecedor, TipoLogEvento.LISTOU_FORNECEDOR);
         return ResponseEntity.ok(fornecedorResponseDto);
     }
-
-    public ResponseEntity<?> listarFornecedorId(@PathVariable Long id){
-        Optional<FornecedorModel> fornecedorEncontrado = fornecedorService.getFornecedorById(id);
-
-        if(fornecedorEncontrado.isEmpty()){
-            FornecedorModel fornecedorNull = new FornecedorModel();
-           // logEventosService.gerarLogBuscaDePeloId(alunoNull, TipoLogEvento.ALUNO_NAO_ENCONTRADO);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fornecedor não encontrado, tente novamente!");
-        }
-
-        FornecedorModel fornecedor = fornecedorEncontrado.orElseThrow(() -> new NoSuchElementException("Fornecedor não encontrado"));
-
-      // logEventosService.gerarLogBuscaDePeloId(fornecedor, TipoLogEvento.LISTOU_ALUNO);
-
-        return ResponseEntity.ok(fornecedorEncontrado.get());
-    }
-
-
     @PostMapping
     public ResponseEntity<FornecedorModel> createFornecedor(@RequestBody FornecedorModel fornecedor) {
         FornecedorModel createdFornecedor = fornecedorService.createFornecedor(fornecedor);
+        logEventosService.gerarLogCadastroRealizado(createdFornecedor,TipoLogEvento.FORNECEDOR_CADASTRADO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdFornecedor);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<FornecedorModel> updateFornecedor(@PathVariable Long id, @RequestBody FornecedorModel fornecedorAtualizado) {
         FornecedorModel updatedFornecedor = fornecedorService.updateFornecedor(id, fornecedorAtualizado);
+        logEventosService.gerarLogAtualizacaoRealizada(updatedFornecedor, TipoLogEvento.FORNECEDOR_ALTERADO);
         return ResponseEntity.ok(updatedFornecedor);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFornecedor(@PathVariable Long id) {
-        fornecedorService.deleteFornecedor(id);
+        Optional<FornecedorModel> fornecedorEncontrado = fornecedorService.getFornecedorById(id);
+        FornecedorModel fornecedor = fornecedorEncontrado.orElseThrow(() -> new NoSuchElementException("Fornecedor não encontrado"));
+
+        logEventosService.gerarLogDeleteRealizado(fornecedor, TipoLogEvento.FORNECEDOR_DELETADO);
         return ResponseEntity.noContent().build();
     }
 }

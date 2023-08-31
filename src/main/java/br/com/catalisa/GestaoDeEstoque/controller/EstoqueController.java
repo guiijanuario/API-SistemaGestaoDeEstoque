@@ -3,7 +3,9 @@ package br.com.catalisa.GestaoDeEstoque.controller;
 import br.com.catalisa.GestaoDeEstoque.dto.EstoqueListDto;
 import br.com.catalisa.GestaoDeEstoque.dto.EstoqueRequestDto;
 import br.com.catalisa.GestaoDeEstoque.dto.ProdutoResponseEstoqueDto;
+import br.com.catalisa.GestaoDeEstoque.enums.TipoLogEvento;
 import br.com.catalisa.GestaoDeEstoque.exception.ResourceNotFoundException;
+import br.com.catalisa.GestaoDeEstoque.log.LogEventosService;
 import br.com.catalisa.GestaoDeEstoque.model.EstoqueModel;
 import br.com.catalisa.GestaoDeEstoque.model.ProdutoModel;
 import br.com.catalisa.GestaoDeEstoque.service.EstoqueService;
@@ -27,12 +29,14 @@ public class EstoqueController {
     @Autowired
     private ProdutoService produtoService;
 
+    @Autowired
+    private LogEventosService logEventosService;
+
 
     @GetMapping("/listarEstoque")
     @Operation(summary = " : Listar todo o estoque", method = "GET")
     public ResponseEntity<List<EstoqueListDto>> listarTodosAlunos() {
         List<EstoqueModel> estoqueEncontrados = estoqueService.listarTodoEstoque();
-
         List<EstoqueListDto> estoqueListDtos = new ArrayList<>();
         for (EstoqueModel estoqueProduto : estoqueEncontrados) {
             ProdutoResponseEstoqueDto produtoDto = new ProdutoResponseEstoqueDto(
@@ -47,8 +51,7 @@ public class EstoqueController {
                     estoqueProduto.getValorVenda());
             estoqueListDtos.add(estoqueDto);
         }
-
-       // logEventosService.gerarLogListarAll(TipoLogEvento.LISTOU_ALUNOS);
+       logEventosService.gerarLogListarAll(TipoLogEvento.LISTOU_TODO_ESTOQUE);
         return ResponseEntity.ok(estoqueListDtos);
     }
 
@@ -58,7 +61,9 @@ public class EstoqueController {
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 
         LocalDate dataValidade = LocalDate.parse(request.validade());
-        return estoqueService.criarEntradaEstoque(produto, request.quantidade(), request.valorCusto(), request.valorVenda(), request.lote(), dataValidade);
+        EstoqueModel estoqueCriado = estoqueService.criarEntradaEstoque(produto, request.quantidade(), request.valorCusto(), request.valorVenda(), request.lote(), dataValidade);
+        logEventosService.gerarLogCadastroRealizado(estoqueCriado, TipoLogEvento.ESTOQUE_CADASTRADO);
+        return estoqueCriado;
     }
 
     @DeleteMapping("/remover/{id}")
@@ -68,11 +73,12 @@ public class EstoqueController {
 
     @PutMapping("/alterar-quantidade/{id}")
     public void alterarQuantidadeEstoque(@PathVariable Long id, @RequestParam int novaQuantidade) {
+        logEventosService.gerarLogListarAll(TipoLogEvento.ESTOQUE_ALTERADO);
         estoqueService.alterarQuantidadeEstoque(id, novaQuantidade);
     }
 
     @PutMapping("/retirarProduto/{id}/{qtdDeRetirada}")
     public void retirarQuantidadeDoProdutoNoEstoque(@PathVariable Long id, @PathVariable int qtdDeRetirada) {
-        estoqueService.retirarQuantidadeEstoquePorProdutoId(id, qtdDeRetirada);
+      estoqueService.retirarQuantidadeEstoquePorProdutoId(id, qtdDeRetirada);
     }
 }

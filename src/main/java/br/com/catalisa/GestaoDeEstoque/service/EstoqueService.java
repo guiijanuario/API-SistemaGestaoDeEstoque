@@ -35,6 +35,10 @@ public class EstoqueService {
         return estoqueRepository.save(entradaEstoque);
     }
 
+    public void listarEstoquePeloId(Long id){
+        estoqueRepository.findById(id);
+    }
+
     public void removerDoEstoque(Long id) {
         estoqueRepository.deleteById(id);
     }
@@ -47,7 +51,6 @@ public class EstoqueService {
             estoqueRepository.save(entradaEstoque);
         }
     }
-
 
     public void retirarQuantidadeEstoquePorProdutoId(Long produtoId, int quantidadeRetirada) {
         List<EstoqueModel> estoqueList = estoqueRepository.findByProdutoId(produtoId);

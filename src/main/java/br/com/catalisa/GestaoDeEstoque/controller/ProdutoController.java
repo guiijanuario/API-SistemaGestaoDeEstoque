@@ -1,7 +1,9 @@
 package br.com.catalisa.GestaoDeEstoque.controller;
 
+import br.com.catalisa.GestaoDeEstoque.enums.TipoLogEvento;
 import br.com.catalisa.GestaoDeEstoque.exception.BadRequestException;
 import br.com.catalisa.GestaoDeEstoque.exception.ResourceNotFoundException;
+import br.com.catalisa.GestaoDeEstoque.log.LogEventosService;
 import br.com.catalisa.GestaoDeEstoque.model.FornecedorModel;
 import br.com.catalisa.GestaoDeEstoque.model.ProdutoModel;
 import br.com.catalisa.GestaoDeEstoque.service.ProdutoService;
@@ -21,17 +23,25 @@ public class ProdutoController {
 
     @Autowired
     private ProdutoService produtoService;
+
+    @Autowired
+    private LogEventosService logEventosService;
+
     @GetMapping
     @ResponseBody
     @Operation(summary = " : Lista todos os Produtos", method = "GET")
     public List<ProdutoModel> listarProdutos() {
+        logEventosService.gerarLogListarAll(TipoLogEvento.LISTOU_PRODUTOS);
         return produtoService.getAllProdutos();
     }
 
     @GetMapping("/{id}")
     public ProdutoModel getProdutoById(@PathVariable Long id) {
-        return produtoService.getProdutoById(id)
+        ProdutoModel produto = produtoService.getProdutoById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com ID: " + id));
+
+        logEventosService.gerarLogBuscaDePeloId(produto,TipoLogEvento.LISTOU_PRODUTO);
+        return produto;
     }
 
     @PostMapping
@@ -40,6 +50,7 @@ public class ProdutoController {
                 throw new BadRequestException("Não inclua ID ao criar um novo produto.");
             }
             ProdutoModel novoProduto = produtoService.createProduto(produto);
+        logEventosService.gerarLogCadastroRealizado(novoProduto,TipoLogEvento.PRODUTO_CADASTRADO);
         return new ResponseEntity<>(novoProduto, HttpStatus.CREATED);
     }
 
@@ -49,6 +60,9 @@ public class ProdutoController {
             throw new BadRequestException("Não inclua ID ao alterar um novo produto.");
         }
         ProdutoModel updatedProduto = produtoService.updateProduto(id, produtoAtualizado);
+
+        logEventosService.gerarLogAtualizacaoRealizada(updatedProduto,TipoLogEvento.PRODUTO_ALTERADO);
+
         return ResponseEntity.ok(updatedProduto);
     }
 
@@ -57,7 +71,6 @@ public class ProdutoController {
         if (id == null) {
             throw new BadRequestException("Insira o ID para deletar");
         }
-        produtoService.deleteProduto(id);
         return ResponseEntity.noContent().build();
     }
 
