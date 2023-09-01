@@ -1,0 +1,590 @@
+openapi: 3.0.1
+info:
+  title: API - Gerenciamento de Estoque
+  description: |
+    Bem-vindo à API de Gestão de Estoques, uma aplicação desenvolvida com o Spring Framework e um banco de dados em memória H2 para gerenciar produtos e fornecedores em seu estoque. Esta API oferece endpoints RESTful para realizar operações de criação, leitura, atualização e exclusão de produtos, bem como operações relacionadas aos fornecedores e ao estoque. Aqui está um resumo das principais funcionalidades e recursos desta aplicação! 🚀
+
+    Para acessar a API localmente, você pode usar o seguinte endpoint:
+
+    - **Endpoint local**: `http://localhost:8080/`
+    ## Instruções de Instalação e Execução
+
+    ## ⚙️ Como Executar a Aplicação
+
+    1. **Pré-requisitos:**
+        - Certifique-se de ter o [JDK 17](https://www.oracle.com/java/technologies/downloads/#java17) instalado em seu computador.
+
+    2. **Clone o Repositório:**
+        - Faça o clone do repositório do projeto para o seu ambiente de desenvolvimento [LINK REPOSITÓRIO](https://github.com/guiijanuario/SistemaGestaoDeEstoque.git)
+
+    3. **Navegue até o Diretório:**
+        - Abra o terminal e navegue até o diretório onde se encontra o arquivo `GestaoDeEstoqueApplication.java`.
+
+    4. **Compilação:**
+        - Compile o arquivo utilizando o seguinte comando:
+          ```
+          javac GestaoDeEstoqueApplication.java
+          ```
+
+    5. **Execução:**
+        - Após compilar, execute a aplicação com o seguinte comando:
+          ```
+          java GestaoDeEstoqueApplication.java
+          ```
+     ## 👨‍💻 Autor
+
+    Nome: Guilherme Januário <br>Linkedin: `https://www.linkedin.com/in/guilherme-janu%C3%A1rio/`
+
+    ---
+
+    <h4>©️ Made with 💚 by <a href="https://github.com/guiijanuario">Guilherme Januário</a></h4>
+  version: '1'
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /produtos/{id}:
+    get:
+      tags:
+        - Feature - Produtos
+      summary: 📦 - Lista produto pelo ID
+      description: Retorna um produto pelo ID
+      operationId: getProdutoById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Produto retornado com sucesso.
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProdutoModel'
+        '404':
+          description: Nenhum produto encontrado.
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProdutoModel'
+    put:
+      tags:
+        - Feature - Produtos
+      summary: 📦 - Altera um produto pelo ID
+      description: Altera os dados de um produto
+      operationId: updateProduto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdutoModel'
+        required: true
+      responses:
+        '200':
+          description: Produto alterado com sucesso
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProdutoModel'
+        '404':
+          description: Produto não alterado
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProdutoModel'
+    delete:
+      tags:
+        - Feature - Produtos
+      summary: 📦 - Deleta um produto pelo ID
+      description: Deleta um produto
+      operationId: deleteProduto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Produto deletado com sucesso
+        '404':
+          description: Nenhum produto encontrado.
+  /fornecedores/{id}:
+    get:
+      tags:
+        - fornecedor-controller
+      summary: 🚚 - Busca fornecedor pelo ID
+      description: Retorna um fornecedor pelo ID fornecido
+      operationId: getFornecedorById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Fornecedor listado com sucesso
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FornecedorResponseDto'
+        '404':
+          description: Nenhum fornecedor encontrado.
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FornecedorResponseDto'
+    put:
+      tags:
+        - fornecedor-controller
+      summary: 🚚 - Altera um fornecedor pelo ID
+      description: Altera os dados de um fornecedor
+      operationId: updateFornecedor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FornecedorModel'
+        required: true
+      responses:
+        '200':
+          description: Fornecedor alterado com sucesso
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FornecedorModel'
+        '404':
+          description: Fornecedor não alterado
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FornecedorModel'
+    delete:
+      tags:
+        - fornecedor-controller
+      summary: 🚚 - Deleta um fornecedor pelo ID
+      description: Deleta um fornecedor
+      operationId: deleteFornecedor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Fornecedor deletado com sucesso
+        '404':
+          description: Nenhum fornecedor encontrado.
+  /estoque/retirarProduto/{id}/{qtdDeRetirada}:
+    put:
+      tags:
+        - estoque-controller
+      summary: 📈 - Faz a retirada de item no estoque pelo ID do produto/Quantidade
+      description: Retira item do estoque pelo ID do produto
+      operationId: retirarQuantidadeDoProdutoNoEstoque
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: qtdDeRetirada
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Foi retidado do estoque a quantidade informada
+        '404':
+          description: Não foi feito a retirada
+  /estoque/alterar-quantidade/{id}:
+    put:
+      tags:
+        - estoque-controller
+      summary: 📈 - Altera a quantidade do estoque pelo ID
+      description: Altera o estoque de um ID do estoque especifico
+      operationId: alterarQuantidadeEstoque
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: novaQuantidade
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Quantidade do estoque alterado com sucesso
+        '404':
+          description: Quantidade do estoque não alterado
+  /produtos:
+    get:
+      tags:
+        - Feature - Produtos
+      summary: 📦 - Lista todos os Produtos
+      description: Retorna uma lista de todos os produtos disponíveis.
+      operationId: listarProdutos
+      responses:
+        '200':
+          description: Lista de produtos retornada com sucesso.
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProdutoModel'
+        '404':
+          description: Nenhum produto encontrado.
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProdutoModel'
+    post:
+      tags:
+        - Feature - Produtos
+      summary: 📦 - Cadastra um produto
+      description: Faz o cadastro de um produto no sistema
+      operationId: createProduto
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdutoModel'
+        required: true
+      responses:
+        '201':
+          description: Produto cadastrado com sucesso
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProdutoModel'
+        '404':
+          description: Produto não cadastrado
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProdutoModel'
+  /fornecedores:
+    get:
+      tags:
+        - fornecedor-controller
+      summary: 🚚 - Lista todos os fornecedores
+      description: Lista todos os fornecedores cadastrado no sistema
+      operationId: getAllFornecedores
+      responses:
+        '200':
+          description: Fornecedores listados com sucesso
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FornecedorResponseDto'
+        '404':
+          description: Nenhum fornecedor encontrado.
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FornecedorResponseDto'
+    post:
+      tags:
+        - fornecedor-controller
+      summary: 🚚 - Cadastra um fornecedor
+      description: Faz o cadastro de um fornecedor no sistema
+      operationId: createFornecedor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FornecedorModel'
+        required: true
+      responses:
+        '201':
+          description: Fornecedor cadastrado com sucesso
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FornecedorModel'
+        '404':
+          description: Fornecedor não cadastrado
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FornecedorModel'
+  /estoque/entrada:
+    post:
+      tags:
+        - estoque-controller
+      summary: 📈 - Cadastra um estoque
+      description: Faz entrada de um estoque no sistema
+      operationId: criarEntradaEstoque
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EstoqueRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Estoque cadastrado com sucesso
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EstoqueModel'
+        '404':
+          description: Estoque não cadastrado
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EstoqueModel'
+  /estoque/listarEstoque:
+    get:
+      tags:
+        - estoque-controller
+      summary: 📈 - Lista todos os estoques
+      description: Lista todos os estoques cadastrado no sistema
+      operationId: listarTodosEstoques
+      responses:
+        '200':
+          description: Estoques listados com sucesso
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EstoqueListDto'
+        '404':
+          description: Nenhum estoque encontrado.
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EstoqueListDto'
+  /estoque/remover/{id}:
+    delete:
+      tags:
+        - estoque-controller
+      summary: 📈 - Deleta um estoque pelo ID
+      description: Deleta um estoque
+      operationId: removerDoEstoque
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Estoque deletado com sucesso
+        '404':
+          description: Nenhum estoque encontrado.
+components:
+  schemas:
+    FornecedorModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          pattern: ^[^0-9]*$
+          type: string
+          description: Nome do Fornecedor
+          example: Pet Ingá LTDA
+        telefone:
+          type: string
+          description: Telefone
+          example: (44) 99999-9999)
+        cep:
+          pattern: ^[0-9]{5}-?[0-9]{3}$
+          type: string
+          description: CEP fornecedor
+          example: 87045-100 ou 87045111
+        nro:
+          pattern: ^[0-9]{1,6}$
+          type: string
+          description: Número do endereço
+          example: '100'
+      description: ID do Fornecedor
+      example: 1
+    ProdutoModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        marca:
+          type: string
+          description: Marca do Produto
+          example: Cacal Show
+        nome:
+          type: string
+          description: Nome do Produto
+          example: Trufa ao leite
+        descricao:
+          type: string
+          description: Descrição do produto
+          example: Esse produto é vegano
+        categoria:
+          type: string
+          description: Categoria do produto
+          example: ALIMENTACAO
+          enum:
+            - ELETRONICOS
+            - VESTUARIO
+            - ALIMENTOS
+            - BEBIDAS
+            - COSMETICOS
+            - MOVEIS
+            - JOGOS
+            - BRINQUEDOS
+            - PET
+            - OUTROS
+        fornecedor:
+          $ref: '#/components/schemas/FornecedorModel'
+        codigo_barras:
+          type: string
+          description: Código de barras
+          example: 13 dígitos numérico
+    EstoqueRequestDto:
+      type: object
+      properties:
+        produtoId:
+          type: integer
+          format: int64
+        quantidade:
+          type: integer
+          format: int32
+        valorCusto:
+          type: number
+        valorVenda:
+          type: number
+        lote:
+          type: string
+        validade:
+          type: string
+    EstoqueModel:
+      required:
+        - quantidade
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        produto:
+          $ref: '#/components/schemas/ProdutoModel'
+        quantidade:
+          type: integer
+          description: Quantidade do produto
+          format: int32
+          example: 30
+        lote:
+          type: string
+          description: Informar o Lote do produto
+          example: Lote123
+        validade:
+          type: string
+          description: Informar a data de validade do produto
+          format: date
+        custo_do_produto:
+          type: number
+          description: Informar o custo de cada unidade
+          example: 30
+        valor_de_venda:
+          type: number
+          description: Informar o preço de venda de cada unidade
+          example: 50
+    CepResponseDto:
+      type: object
+      properties:
+        cep:
+          type: string
+        logradouro:
+          type: string
+        bairro:
+          type: string
+        localidade:
+          type: string
+        uf:
+          type: string
+    FornecedorResponseDto:
+      type: object
+      properties:
+        nome:
+          type: string
+        telefone:
+          type: string
+        cep:
+          type: string
+        numero:
+          type: string
+        endereco_completo:
+          $ref: '#/components/schemas/CepResponseDto'
+    EstoqueListDto:
+      type: object
+      properties:
+        produto:
+          $ref: '#/components/schemas/ProdutoResponseEstoqueDto'
+        quantidade_em_estoque:
+          type: integer
+          format: int32
+        valor_venda:
+          type: number
+    ProdutoResponseEstoqueDto:
+      type: object
+      properties:
+        codigo_barras:
+          type: string
+        marca:
+          type: string
+        nome:
+          type: string
+        categoria:
+          type: string
+          enum:
+            - ELETRONICOS
+            - VESTUARIO
+            - ALIMENTOS
+            - BEBIDAS
+            - COSMETICOS
+            - MOVEIS
+            - JOGOS
+            - BRINQUEDOS
+            - PET
+            - OUTROS
