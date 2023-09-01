@@ -109,17 +109,19 @@ public class FornecedorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdFornecedor);
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "\uD83D\uDE9A - Altera um fornecedor pelo ID", description = "Altera os dados de um fornecedor", method = "PUT")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Fornecedor alterado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Fornecedor não alterado")
-    })
-    public ResponseEntity<FornecedorModel> updateFornecedor(@PathVariable Long id, @RequestBody FornecedorModel fornecedorAtualizado) {
-        FornecedorModel updatedFornecedor = fornecedorService.updateFornecedor(id, fornecedorAtualizado);
-        logEventosService.gerarLogAtualizacaoRealizada(updatedFornecedor, TipoLogEvento.FORNECEDOR_ALTERADO);
-        return ResponseEntity.ok(updatedFornecedor);
-    }
+//    @PutMapping("/{id}")
+//    @Operation(summary = "\uD83D\uDE9A - Altera um fornecedor pelo ID", description = "Altera os dados de um fornecedor", method = "PUT")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Fornecedor alterado com sucesso"),
+//            @ApiResponse(responseCode = "404", description = "Fornecedor não alterado")
+//    })
+//    public ResponseEntity<FornecedorModel> updateFornecedor(@PathVariable Long id, @RequestBody FornecedorModel fornecedorAtualizado) {
+//        FornecedorModel updatedFornecedor = fornecedorService.updateFornecedor(id, fornecedorAtualizado);
+//
+//
+//        logEventosService.gerarLogAtualizacaoRealizada(updatedFornecedor, TipoLogEvento.FORNECEDOR_ALTERADO);
+//        return ResponseEntity.ok(updatedFornecedor);
+//    }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "\uD83D\uDE9A - Deleta um fornecedor pelo ID", description = "Deleta um fornecedor", method = "DELETE")

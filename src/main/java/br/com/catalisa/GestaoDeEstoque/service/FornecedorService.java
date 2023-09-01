@@ -43,17 +43,17 @@ public class FornecedorService {
         return fornecedorRepository.save(fornecedor);
     }
 
-    public FornecedorModel updateFornecedor(Long id, FornecedorModel fornecedorAtualizado) {
-        FornecedorModel fornecedorExistente = getFornecedorById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado com ID: " + id));
-
-        fornecedorExistente.setNome(fornecedorAtualizado.getNome());
-        fornecedorExistente.setTelefone(fornecedorAtualizado.getTelefone());
-        fornecedorExistente.setNro(fornecedorAtualizado.getNro());
-        fornecedorExistente.setCepModel(cepService.findCep(String.valueOf(fornecedorAtualizado.getCepModel())));
-
-        return fornecedorRepository.save(fornecedorExistente);
-    }
+//    public FornecedorModel updateFornecedor(Long id, FornecedorModel fornecedorAtualizado) {
+//        FornecedorModel fornecedorExistente = getFornecedorById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado com ID: " + id));
+//
+//        fornecedorExistente.setNome(fornecedorAtualizado.getNome());
+//        fornecedorExistente.setTelefone(fornecedorAtualizado.getTelefone());
+//        fornecedorExistente.setNro(fornecedorAtualizado.getNro());
+//        fornecedorExistente.setCepModel(cepService.findCep(String.valueOf(fornecedorAtualizado.getCepModel())));
+//
+//        return fornecedorRepository.save(fornecedorExistente);
+//    }
 
     public void deleteFornecedor(Long id) {
         FornecedorModel fornecedor = getFornecedorById(id)

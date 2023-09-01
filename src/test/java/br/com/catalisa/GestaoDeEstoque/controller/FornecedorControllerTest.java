@@ -1,15 +1,19 @@
 package br.com.catalisa.GestaoDeEstoque.controller;
 
+import br.com.catalisa.GestaoDeEstoque.enums.CategoriaProduto;
 import br.com.catalisa.GestaoDeEstoque.log.LogEventosService;
 import br.com.catalisa.GestaoDeEstoque.model.CepModel;
 import br.com.catalisa.GestaoDeEstoque.model.FornecedorModel;
+import br.com.catalisa.GestaoDeEstoque.model.ProdutoModel;
 import br.com.catalisa.GestaoDeEstoque.service.FornecedorService;
 import br.com.catalisa.GestaoDeEstoque.validations.CepValidations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -71,6 +75,42 @@ public class FornecedorControllerTest {
     }
 
     @Test
+    public void testarCadastroDeFornecedor() throws Exception {
+        CepModel cepMockEndereco = new CepModel();
+        cepMockEndereco.setId(1L);
+        cepMockEndereco.setCep("87045440");
+        cepMockEndereco.setLogradouro("Rua gaivota");
+        cepMockEndereco.setBairro("Jardim Olímpico");
+        cepMockEndereco.setLocalidade("Maringá");
+        cepMockEndereco.setUf("PR");
+
+        FornecedorModel fornecedor = new FornecedorModel();
+        fornecedor.setId(1L);
+        fornecedor.setNome("Pet Atacadista11111");
+        fornecedor.setTelefone("(44) 998661234");
+        fornecedor.setCep("87045442");
+        fornecedor.setNro("140");
+        fornecedor.setCepModel(cepMockEndereco);
+
+        Mockito.when(fornecedorService.createFornecedor(Mockito.any(fornecedor.getClass()))).thenReturn(fornecedor);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/fornecedores")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\n" +
+                                "  \"nome\": \"Pet Atacadista11111\",\n" +
+                                "  \"telefone\": \"(44) 998661234\",\n" +
+                                "\t\"nro\": \"140\",\n" +
+                                "  \"cep\": \"87045442\"\n" +
+                                "}\n"))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nome").value("Pet Atacadista11111"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.telefone").value("(44) 998661234"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nro").value("140"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.cep").value("87045442"))
+                .andDo(print());
+    }
+
+    @Test
     void testListarFornecedorPorId() throws Exception {
         Long fornecedorId = 1L;
         CepModel cepMockEndereco = new CepModel();
@@ -96,6 +136,38 @@ public class FornecedorControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.telefone").value(fornecedor.getTelefone()));
     }
+
+//    @Test
+//    public void testarAlteracaoDeFornecedores() throws Exception {
+//        CepModel cepMockEndereco = new CepModel();
+//        cepMockEndereco.setId(1L);
+//        cepMockEndereco.setCep("87045440");
+//        cepMockEndereco.setLogradouro("Rua gaivota");
+//        cepMockEndereco.setBairro("Jardim Olímpico");
+//        cepMockEndereco.setLocalidade("Maringá");
+//        cepMockEndereco.setUf("PR");
+//
+//        FornecedorModel fornecedor = new FornecedorModel();
+//        fornecedor.setId(1L);
+//        fornecedor.setNome("Fornecedor 1");
+//        fornecedor.setTelefone("987654321");
+//        fornecedor.setCep("87045440");
+//        fornecedor.setNro("456");
+//        fornecedor.setCepModel(cepMockEndereco);
+//
+//        Mockito.when(fornecedorService.updateFornecedor(Mockito.eq(1L), Mockito.any(fornecedor.getClass()))).thenReturn(fornecedor);
+//
+//        mockMvc.perform(MockMvcRequestBuilders.put("/fornecedores/1")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content("{\n" +
+//                                "  \"nome\": \"Novo Produto New\",\n" +
+//                                "  \"descricao\": \"New Descrição\"\n" +
+//                                "}"))
+//                .andExpect(status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.nome").value("Novo nome do produto"))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.descricao").value("Nova descrição do produto"))
+//                .andDo(print());
+//    }
 
     @Test
     void testaSedeletaFornecedor() throws Exception {

@@ -1,5 +1,6 @@
 package br.com.catalisa.GestaoDeEstoque.controller;
 
+import br.com.catalisa.GestaoDeEstoque.enums.CategoriaProduto;
 import br.com.catalisa.GestaoDeEstoque.log.LogEventosService;
 import br.com.catalisa.GestaoDeEstoque.model.CepModel;
 import br.com.catalisa.GestaoDeEstoque.model.FornecedorModel;
@@ -76,6 +77,94 @@ public class ProdutoControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(produtosEncontrados.size()));
+    }
+
+    @Test
+    public void testarCadastroDeProduto() throws Exception {
+        CepModel cepMockEndereco = new CepModel();
+        cepMockEndereco.setId(1L);
+        cepMockEndereco.setCep("87045440");
+        cepMockEndereco.setLogradouro("Rua gaivota");
+        cepMockEndereco.setBairro("Jardim Olímpico");
+        cepMockEndereco.setLocalidade("Maringá");
+        cepMockEndereco.setUf("PR");
+
+        FornecedorModel fornecedor = new FornecedorModel();
+        fornecedor.setId(1L);
+        fornecedor.setNome("Fornecedor 1");
+        fornecedor.setTelefone("987654321");
+        fornecedor.setCep("87045440");
+        fornecedor.setNro("456");
+        fornecedor.setCepModel(cepMockEndereco);
+
+        ProdutoModel produto = new ProdutoModel();
+        produto.setCodigoBarras("123984411");
+        produto.setMarca("Billy Dog");
+        produto.setNome("Billy Dog");
+        produto.setDescricao("Ração sabor carne para cachorros de porte médio");
+        produto.setCategoria(CategoriaProduto.ALIMENTOS);
+        produto.setFornecedor(fornecedor);
+
+        Mockito.when(produtoService.createProduto(Mockito.any(produto.getClass()))).thenReturn(produto);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/produtos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\n" +
+                                "  \"codigoBarras\": \"123984411\",\n" +
+                                "  \"marca\": \"Billy Dog\",\n" +
+                                "  \"nome\": \"Ração Billy Dog porte pequeno sabor frango\",\n" +
+                                "  \"descricao\": \"Ração sabor carne para cachorros de porte médio\",\n" +
+                                "  \"categoria\": \"ALIMENTOS\",\n" +
+                                "  \"fornecedor\": {\n" +
+                                "    \"id\": 4\n" +
+                                "  }\n" +
+                                "}"))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.codigoBarras").value("123984411"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.marca").value("Billy Dog"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nome").value("Billy Dog"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.descricao").value("Ração sabor carne para cachorros de porte médio"))
+                .andDo(print());
+    }
+
+    @Test
+    public void testarAlteracaoDeProduto() throws Exception {
+        CepModel cepMockEndereco = new CepModel();
+        cepMockEndereco.setId(1L);
+        cepMockEndereco.setCep("87045440");
+        cepMockEndereco.setLogradouro("Rua gaivota");
+        cepMockEndereco.setBairro("Jardim Olímpico");
+        cepMockEndereco.setLocalidade("Maringá");
+        cepMockEndereco.setUf("PR");
+
+        FornecedorModel fornecedor = new FornecedorModel();
+        fornecedor.setId(1L);
+        fornecedor.setNome("Fornecedor 1");
+        fornecedor.setTelefone("987654321");
+        fornecedor.setCep("87045440");
+        fornecedor.setNro("456");
+        fornecedor.setCepModel(cepMockEndereco);
+
+        ProdutoModel produto = new ProdutoModel();
+        produto.setCodigoBarras("123984411");
+        produto.setMarca("Billy Dog");
+        produto.setNome("Novo nome do produto");
+        produto.setDescricao("Nova descrição do produto");
+        produto.setCategoria(CategoriaProduto.ALIMENTOS);
+        produto.setFornecedor(fornecedor);
+
+        Mockito.when(produtoService.updateProduto(Mockito.eq(1L), Mockito.any(produto.getClass()))).thenReturn(produto);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/produtos/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\n" +
+                                "  \"nome\": \"Novo Produto New\",\n" +
+                                "  \"descricao\": \"New Descrição\"\n" +
+                                "}"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nome").value("Novo nome do produto"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.descricao").value("Nova descrição do produto"))
+                .andDo(print());
     }
 
 
