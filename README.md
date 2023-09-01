@@ -75,7 +75,7 @@ Para acessar a API localmente, você pode usar o seguinte endpoint:
           "id": 1
         }
       }
-      ```✅
+      ```
 
 ### Estoque (Feature - Estoque) 📈
 
