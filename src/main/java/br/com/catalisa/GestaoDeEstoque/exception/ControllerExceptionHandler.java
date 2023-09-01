@@ -1,9 +1,13 @@
 package br.com.catalisa.GestaoDeEstoque.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+
+import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
@@ -16,8 +20,8 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(ViaCepNullException.class)
     public ResponseEntity<Object> handleResourceNotFoundException(ViaCepNullException ex) {
-        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE.value());
-        return new ResponseEntity<>(errorDetails, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadRequestException.class)
@@ -26,13 +30,18 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGenericException(Exception ex) {
-        ErrorDetails errorDetails = new ErrorDetails("Ocorreu um erro interno.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorDetails> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
+        String errorMessage = "Não é possível excluir este cadastro devido a restrições de integridade referencial.";
+        ErrorDetails errorDetails = new ErrorDetails(errorMessage, HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Object> handleGenericException(NoSuchElementException ex) {
+        ErrorDetails errorDetails = new ErrorDetails("ID não encontrado", HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
     private record ErrorDetails(String message, int statusCode) {
     }
 }

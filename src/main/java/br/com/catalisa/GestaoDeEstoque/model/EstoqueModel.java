@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Table(name = "TB_ESTOQUE")
-public class EstoqueModel implements Serializable {
+public class EstoqueModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

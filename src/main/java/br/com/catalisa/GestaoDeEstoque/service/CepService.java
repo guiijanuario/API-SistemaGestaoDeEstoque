@@ -30,8 +30,8 @@ public class CepService {
 
     @Cacheable("cep")
     public CepModel findCep(String cepString) {
-       cepValidations.validaCep(cepString);
-       cepValidations.removedorDeMascaraCep(cepString);
+        cepValidations.validaCep(cepString);
+        cepValidations.removedorDeMascaraCep(cepString);
         try {
             HttpClient httpClient = HttpClient.newBuilder()
                     .connectTimeout(Duration.of(1, MINUTES))
@@ -39,7 +39,7 @@ public class CepService {
 
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .GET()
-                    .uri(URI.create(viaCepUrl+cepString+"/json"))
+                    .uri(URI.create(viaCepUrl + cepString + "/json"))
                     .build();
 
             HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());

@@ -27,7 +27,6 @@ public class FornecedorService {
     @Autowired
     private CepValidations cepValidations;
 
-
     public List<FornecedorModel> getAllFornecedores() {
         return fornecedorRepository.findAll();
     }
@@ -50,7 +49,8 @@ public class FornecedorService {
 
         fornecedorExistente.setNome(fornecedorAtualizado.getNome());
         fornecedorExistente.setTelefone(fornecedorAtualizado.getTelefone());
-        fornecedorExistente.setCepModel(fornecedorAtualizado.getCepModel());
+        fornecedorExistente.setNro(fornecedorAtualizado.getNro());
+        fornecedorExistente.setCepModel(cepService.findCep(String.valueOf(fornecedorAtualizado.getCepModel())));
 
         return fornecedorRepository.save(fornecedorExistente);
     }

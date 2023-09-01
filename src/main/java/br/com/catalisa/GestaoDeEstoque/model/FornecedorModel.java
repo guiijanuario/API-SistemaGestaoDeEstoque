@@ -17,8 +17,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @Table(name = "TB_FORNECEDORES")
-public class FornecedorModel implements Serializable {
-
+public class FornecedorModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,7 +38,4 @@ public class FornecedorModel implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cep_id")
     private CepModel cepModel;
-
-
-
 }

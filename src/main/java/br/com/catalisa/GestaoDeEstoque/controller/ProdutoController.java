@@ -41,7 +41,6 @@ public class ProdutoController {
     public ProdutoModel getProdutoById(@PathVariable Long id) {
         ProdutoModel produto = produtoService.getProdutoById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com ID: " + id));
-
         logEventosService.gerarLogBuscaDePeloId(produto,TipoLogEvento.LISTOU_PRODUTO);
         return produto;
     }
@@ -62,9 +61,7 @@ public class ProdutoController {
             throw new BadRequestException("Não inclua ID ao alterar um novo produto.");
         }
         ProdutoModel updatedProduto = produtoService.updateProduto(id, produtoAtualizado);
-
         logEventosService.gerarLogAtualizacaoRealizada(updatedProduto,TipoLogEvento.PRODUTO_ALTERADO);
-
         return ResponseEntity.ok(updatedProduto);
     }
 
@@ -73,6 +70,7 @@ public class ProdutoController {
         if (id == null) {
             throw new BadRequestException("Insira o ID para deletar");
         }
+        produtoService.deleteProduto(id);
         return ResponseEntity.noContent().build();
     }
 

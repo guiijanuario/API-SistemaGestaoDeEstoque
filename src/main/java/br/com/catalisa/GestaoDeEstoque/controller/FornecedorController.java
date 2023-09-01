@@ -3,20 +3,19 @@ package br.com.catalisa.GestaoDeEstoque.controller;
 import br.com.catalisa.GestaoDeEstoque.dto.CepResponseDto;
 import br.com.catalisa.GestaoDeEstoque.dto.FornecedorResponseDto;
 import br.com.catalisa.GestaoDeEstoque.enums.TipoLogEvento;
+import br.com.catalisa.GestaoDeEstoque.exception.IdNaoEncontradoException;
 import br.com.catalisa.GestaoDeEstoque.exception.ResourceNotFoundException;
 import br.com.catalisa.GestaoDeEstoque.log.LogEventosService;
 import br.com.catalisa.GestaoDeEstoque.model.FornecedorModel;
 import br.com.catalisa.GestaoDeEstoque.service.FornecedorService;
 import br.com.catalisa.GestaoDeEstoque.validations.CepValidations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -33,7 +32,6 @@ public class FornecedorController {
     private LogEventosService logEventosService;
 
     @GetMapping
-    @Cacheable("fornecedores")
     public ResponseEntity<List<FornecedorResponseDto>> getAllFornecedores() {
         List<FornecedorModel> fornecedoresEncontrados = fornecedorService.getAllFornecedores();
 
@@ -96,9 +94,10 @@ public class FornecedorController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFornecedor(@PathVariable Long id) {
         Optional<FornecedorModel> fornecedorEncontrado = fornecedorService.getFornecedorById(id);
-        FornecedorModel fornecedor = fornecedorEncontrado.orElseThrow(() -> new NoSuchElementException("Fornecedor não encontrado"));
+        FornecedorModel fornecedor = fornecedorEncontrado.orElseThrow(() -> new IdNaoEncontradoException("Fornecedor não encontrado!"));
 
         logEventosService.gerarLogDeleteRealizado(fornecedor, TipoLogEvento.FORNECEDOR_DELETADO);
+        fornecedorService.deleteFornecedor(id);
         return ResponseEntity.noContent().build();
     }
 }
